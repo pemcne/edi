@@ -22,6 +22,7 @@ func main() {
 	Edi.Respond("(\\+|-)\\s*(\\d+) (to|for) (.+)", Points)
 	Edi.Respond("score for (.+)", PointsScore)
 	Edi.Respond("leaderboard", PointsLeaderboard)
+	Edi.Respond("what happened today", Today)
 
 	err := Edi.Run()
 	if err != nil {
