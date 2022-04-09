@@ -24,6 +24,8 @@ func main() {
 	Edi.Respond("leaderboard", PointsLeaderboard)
 	Edi.Respond("what happened today", Today)
 
+	Edi.Hear("Wordle\\s\\d+\\s(.+)/\\d", WordleScore)
+
 	err := Edi.Run()
 	if err != nil {
 		Edi.Logger.Fatal(err.Error())
