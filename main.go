@@ -11,14 +11,30 @@ import (
 
 var Edi *joe.Bot
 
+func loadModules() []joe.Module {
+	var modules []joe.Module
+	// See if we want to load Slack
+	if token, t_ok := os.LookupEnv("SLACK_TOKEN"); t_ok {
+		if app_token, a_ok := os.LookupEnv("SLACK_APP_TOKEN"); a_ok {
+			adapter := slack.EventsAPIAdapter(
+				token,
+				slack.WithSocketMode(app_token),
+				slack.WithListenPassive(),
+				// slack.WithDebug(true),
+			)
+			modules = append(modules, adapter)
+		}
+	}
+	// Load store
+	modules = append(modules, file.Memory("brain.json"))
+	// For debugging
+	modules = append(modules, joe.WithLogLevel(zapcore.DebugLevel))
+	return modules
+}
+
 func main() {
-	adapter := slack.EventsAPIAdapter(
-		os.Getenv("SLACK_TOKEN"),
-		slack.WithSocketMode(os.Getenv("SLACK_APP_TOKEN")),
-		slack.WithListenPassive(),
-		// slack.WithDebug(true),
-	)
-	Edi = joe.New("Edi", joe.WithLogLevel(zapcore.DebugLevel), file.Memory("brain.json"), adapter)
+	modules := loadModules()
+	Edi = joe.New("Edi", modules...)
 
 	Edi.Respond("ping", Pong)
 	Edi.Respond("flip a coin", CoinFlip)
