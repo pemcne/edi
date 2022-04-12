@@ -36,13 +36,22 @@ func main() {
 	modules := loadModules()
 	Edi = joe.New("Edi", modules...)
 
+	// Ping
 	Edi.Respond("ping", Pong)
+
+	// Coin
 	Edi.Respond("flip a coin", CoinFlip)
+
+	// Points
 	Edi.Respond("(\\+|-)\\s*(\\d+) (to|for) (.+)", Points)
 	Edi.Respond("score for (.+)", PointsScore)
 	Edi.Respond("leaderboard", PointsLeaderboard)
 	Edi.Respond("what happened today", Today)
 
+	// Trivia
+	Edi.Respond("trivia", TriviaQuestion)
+
+	// Wordle
 	Edi.Hear("Wordle\\s\\d+\\s(.+)/\\d", WordleScore)
 	Edi.Hear("Dordle\\s#\\d+\\s(.+)/\\d", DordleScore)
 	Edi.Hear("Quordle\\s\\d+\\s+(:.+:)(:.+:)\\s+(:.+:)(:.+:)", QuordleScore)
