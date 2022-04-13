@@ -49,7 +49,10 @@ func main() {
 	Edi.Respond("what happened today", Today)
 
 	// Trivia
-	Edi.Respond("trivia", TriviaQuestion)
+	Edi.Respond("trivia question", TriviaQuestion)
+	Edi.Respond("trivia answer", TriviaAnswer)
+	Edi.Respond("fuck this question", TriviaGiveUp)
+	Edi.Hear(".+", TriviaGuess)
 
 	// Wordle
 	Edi.Hear("Wordle\\s\\d+\\s(.+)/\\d", WordleScore)
