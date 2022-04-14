@@ -36,8 +36,7 @@ func main() {
 	modules := loadModules()
 	Edi = joe.New("Edi", modules...)
 
-	// Ping
-	Edi.Respond("ping", Pong)
+	CommonResponses(Edi)
 
 	// Coin
 	Edi.Respond("flip a coin", CoinFlip)
