@@ -1,7 +1,9 @@
 package main
 
 import (
+	"math/rand"
 	"os"
+	"time"
 
 	"github.com/go-joe/file-memory"
 	"github.com/go-joe/joe"
@@ -10,6 +12,17 @@ import (
 )
 
 var Edi *joe.Bot
+
+var RandomGenerator *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
+
+func correctRoom(msg joe.Message, rooms []string) bool {
+	for _, i := range rooms {
+		if i == msg.Channel {
+			return true
+		}
+	}
+	return false
+}
 
 func loadModules() []joe.Module {
 	var modules []joe.Module
@@ -59,6 +72,10 @@ func main() {
 	Edi.Hear("Quordle\\s\\d+\\s+(:.+:)(:.+:)\\s+(:.+:)(:.+:)", QuordleScore)
 	Edi.Hear("Octordle\\s#\\d+\\s+(:.+:)(:.+:)\\s+(:.+:)(:.+:)\\s+(:.+:)(:.+:)\\s+(:.+:)(:.+:)", OctordleScore)
 	Edi.Hear("Worldle\\s#\\d+\\s(.+)/\\d", WorldleScore)
+
+	// Huwordle
+	Edi.Respond("huwordle", HuwordleNew)
+	Edi.Hear(`^\w+$`, HuwordleGuess)
 
 	err := Edi.Run()
 	if err != nil {

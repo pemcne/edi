@@ -1,13 +1,8 @@
 package main
 
 import (
-	"math/rand"
-	"time"
-
 	"github.com/go-joe/joe"
 )
-
-var RandomGenerator *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 func chooseRandom(choices []string) string {
 	randNum := RandomGenerator.Intn(len(choices))
