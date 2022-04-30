@@ -8,6 +8,7 @@ require (
 	github.com/go-joe/joe v0.11.0
 	github.com/go-joe/slack-adapter/v2 v2.2.0
 	github.com/lithammer/fuzzysearch v1.1.3
+	github.com/robfig/cron/v3 v3.0.1
 	go.uber.org/zap v1.21.0
 )
 
