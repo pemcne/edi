@@ -20,6 +20,8 @@ type Trivia struct {
 
 const triviaStoreKey string = "edi.trivia"
 
+var TRIVIAROOMS = []string{"", "C035YQ3UG79"}
+
 func pruneAnswer(answer string) []string {
 	// This just compiles a list of possible answers to assist
 	// the fuzzy match
@@ -91,6 +93,9 @@ func answerQuestion(correct bool, msg *joe.Message) error {
 }
 
 func TriviaQuestion(msg joe.Message) error {
+	if !correctRoom(msg, TRIVIAROOMS) {
+		return nil
+	}
 	err := askQuestion(&msg)
 	if err != nil {
 		return err
@@ -99,6 +104,9 @@ func TriviaQuestion(msg joe.Message) error {
 }
 
 func TriviaAnswer(msg joe.Message) error {
+	if !correctRoom(msg, TRIVIAROOMS) {
+		return nil
+	}
 	err := answerQuestion(false, &msg)
 	if err != nil {
 		return err
@@ -107,6 +115,9 @@ func TriviaAnswer(msg joe.Message) error {
 }
 
 func TriviaGuess(msg joe.Message) error {
+	if !correctRoom(msg, TRIVIAROOMS) {
+		return nil
+	}
 	q := Trivia{}
 	ok, err := Edi.Store.Get(triviaStoreKey, &q)
 	if err != nil {

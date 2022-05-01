@@ -210,9 +210,9 @@ func HuwordleNew(msg joe.Message) error {
 }
 
 func HuwordleGuess(msg joe.Message) error {
-	// if !correctRoom(msg, HUWORDLEROOMS) {
-	// 	return nil
-	// }
+	if !correctRoom(msg, HUWORDLEROOMS) {
+		return nil
+	}
 	state, err := getState()
 	if err != nil {
 		return err
