@@ -121,6 +121,7 @@ func ScheduleRemove(msg joe.Message) error {
 func ScheduleList(msg joe.Message) error {
 	if len(allSchedules) == 0 {
 		msg.Respond("No schedules set yet")
+		return nil
 	}
 	var output []string
 	for id, sch := range allSchedules {
