@@ -59,10 +59,30 @@ func addSchedule(pattern, message, channel string) (cron.EntryID, Schedule, erro
 	return cronId, s, nil
 }
 
+func removeFromScheduleArray(sch Schedule) {
+	fmt.Println(scheduleState)
+	if len(scheduleState) == 1 {
+		scheduleState = scheduleState[:0]
+		return
+	}
+	index := -1
+	for i, v := range scheduleState {
+		if v.Channel == sch.Channel && v.Message == sch.Message && v.Pattern == sch.Pattern {
+			fmt.Println("Found match")
+			fmt.Println(i)
+			index = i
+		}
+	}
+	if index != -1 {
+		scheduleState = append(scheduleState[:index], scheduleState[index+1:]...)
+	}
+	fmt.Println(scheduleState)
+}
+
 func removeSchedule(id cron.EntryID) error {
+	removeFromScheduleArray(allSchedules[id])
 	schedule.Remove(id)
 	delete(allSchedules, id)
-	// TODO remove from array too
 	return Edi.Store.Set(scheduleStoreKey, scheduleState)
 }
 

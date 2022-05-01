@@ -77,6 +77,12 @@ func main() {
 	Edi.Respond("huwordle", HuwordleNew)
 	Edi.Hear(`^\w+$`, HuwordleGuess)
 
+	// Schedules
+	cronInit()
+	Edi.Respond(`schedule (?:new|add)(?: #(.*))? "(.*?)" ((?:.|\s)*)$`, ScheduleNew)
+	Edi.Respond(`schedule list`, ScheduleList)
+	Edi.Respond(`schedule (remove|delete) (\d+)`, ScheduleRemove)
+
 	err := Edi.Run()
 	if err != nil {
 		Edi.Logger.Fatal(err.Error())
