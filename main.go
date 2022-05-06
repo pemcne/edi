@@ -80,7 +80,7 @@ func main() {
 
 	// Schedules
 	cronInit()
-	Edi.Respond(`schedule (?:new|add)(?: #(.*))? "(.*?)" ((?:.|\s)*)$`, ScheduleNew)
+	Edi.Respond(`schedule (?:new|add)(?: <#(\w+)\|.+>)? "(.*?)" ((?:.|\s)*)$`, ScheduleNew)
 	Edi.Respond(`schedule list`, ScheduleList)
 	Edi.Respond(`schedule (remove|delete) (\d+)`, ScheduleRemove)
 
