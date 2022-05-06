@@ -7,4 +7,4 @@ User=edi
 Restart=always
 EnvironmentFile=-/etc/default/edi
 WorkingDirectory=/home/edi/bot
-ExecStart=/home/edi/bot/edi
+ExecStart=/usr/local/bin/edi
