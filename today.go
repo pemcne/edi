@@ -11,6 +11,8 @@ import (
 	"github.com/go-joe/joe"
 )
 
+const todayStoreKey string = "today.cache"
+
 type TodayCache struct {
 	Key   string    `json:"key"`
 	Cache OnThisDay `json:"cache"`
@@ -38,7 +40,7 @@ func Today(msg joe.Message) error {
 	urlDate := fmt.Sprintf("%d/%d", int(t.Month()), t.Day())
 
 	var cache TodayCache
-	ok, err := Edi.Store.Get("today.cache", &cache)
+	ok, err := Edi.Store.Get(todayStoreKey, &cache)
 	if err != nil {
 		return err
 	}
@@ -66,7 +68,7 @@ func Today(msg joe.Message) error {
 			Key:   urlDate,
 			Cache: events,
 		}
-		Edi.Store.Set("today.cache", cache)
+		Edi.Store.Set(todayStoreKey, cache)
 	} else {
 		Edi.Logger.Info("Pulled data from cache")
 		events = cache.Cache

@@ -9,6 +9,8 @@ import (
 	"github.com/go-joe/joe"
 )
 
+const pointsStoreKey string = "points"
+
 type Point struct {
 	Id    string `json:"id"`
 	Value int    `json:"value"`
@@ -32,7 +34,7 @@ var allPoints map[string]Point
 
 func Points(msg joe.Message) error {
 	Edi.Logger.Info("Getting from store")
-	ok, err := Edi.Store.Get("edi.points", &allPoints)
+	ok, err := Edi.Store.Get(pointsStoreKey, &allPoints)
 	if err != nil {
 		return err
 	}
@@ -62,7 +64,7 @@ func Points(msg joe.Message) error {
 		p.Value -= amount
 	}
 	allPoints[key] = p
-	Edi.Store.Set("edi.points", allPoints)
+	Edi.Store.Set(pointsStoreKey, allPoints)
 
 	msg.Respond("%s%d to %s = %d", symbol, amount, p.Id, p.Value)
 
@@ -70,7 +72,7 @@ func Points(msg joe.Message) error {
 }
 
 func PointsScore(msg joe.Message) error {
-	_, err := Edi.Store.Get("edi.points", &allPoints)
+	_, err := Edi.Store.Get(pointsStoreKey, &allPoints)
 	if err != nil {
 		return err
 	}
@@ -82,7 +84,7 @@ func PointsScore(msg joe.Message) error {
 }
 
 func PointsLeaderboard(msg joe.Message) error {
-	_, err := Edi.Store.Get("edi.points", &allPoints)
+	_, err := Edi.Store.Get(pointsStoreKey, &allPoints)
 	if err != nil {
 		return err
 	}
