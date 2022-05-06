@@ -43,6 +43,14 @@ var emojiTranslate map[string]string = map[string]string{
 	":clock12:": "12",
 }
 
+var attempts map[string]int = map[string]int{
+	Wordle:   6,
+	Dordle:   7,
+	Quordle:  9,
+	Octordle: 12,
+	Worldle:  6,
+}
+
 func computeAverage(scores []string) (float64, error) {
 	var total float64
 	for _, score := range scores {
@@ -89,19 +97,17 @@ func processGame(user, game string, scores []string) error {
 	// Now store it all back into memory
 	allScores[user] = userScores
 	Edi.Store.Set(wordleBrainKey, allScores)
-	fmt.Println(allScores)
 	return nil
 }
 
 // Wordle\s\d+\s(.+)/\d
 func WordleScore(msg joe.Message) error {
 	const game string = Wordle
-	const attempt string = "7"
 
 	user := msg.AuthorID
 	score := strings.TrimSpace(msg.Matches[0])
 	if score == "X" {
-		score = attempt
+		score = strconv.Itoa(attempts[game] + 1)
 	}
 	scores := []string{score}
 	err := processGame(user, game, scores)
@@ -112,14 +118,13 @@ func WordleScore(msg joe.Message) error {
 // Dordle\s#\d+\s(.+)/\d
 func DordleScore(msg joe.Message) error {
 	const game string = Dordle
-	const attempt string = "8"
 
 	user := msg.AuthorID
 	score := msg.Matches[0]
 	scores := strings.Split(score, "&")
 	for i, v := range scores {
 		if v == "X" {
-			scores[i] = attempt
+			scores[i] = strconv.Itoa(attempts[game] + 1)
 		}
 	}
 	err := processGame(user, game, scores)
@@ -129,13 +134,12 @@ func DordleScore(msg joe.Message) error {
 // Quordle\\s\\d+\\s+(:.+:)(:.+:)\\s+(:.+:)(:.+:)
 func QuordleScore(msg joe.Message) error {
 	const game string = Quordle
-	const attempt string = "10"
 
 	user := msg.AuthorID
 	scores := msg.Matches
 	for i, v := range scores {
 		if v == ":large_red_square" {
-			scores[i] = attempt
+			scores[i] = strconv.Itoa(attempts[game] + 1)
 		} else {
 			scores[i] = emojiTranslate[v]
 		}
@@ -147,34 +151,55 @@ func QuordleScore(msg joe.Message) error {
 // Octordle\\s\\d+\\s+(:.+:)(:.+:)\\s+(:.+:)(:.+:)\\s+(:.+:)(:.+:)\\s+(:.+:)(:.+:)
 func OctordleScore(msg joe.Message) error {
 	const game string = Octordle
-	const attempt string = "13"
-	fmt.Println(msg.Matches)
 
 	user := msg.AuthorID
 	scores := msg.Matches
 	for i, v := range scores {
 		if v == ":large_red_square:" {
-			scores[i] = attempt
+			scores[i] = strconv.Itoa(attempts[game] + 1)
 		} else {
 			scores[i] = emojiTranslate[v]
 		}
 	}
-	fmt.Println(scores)
 	err := processGame(user, game, scores)
 	return err
 }
 
 func WorldleScore(msg joe.Message) error {
 	const game string = Worldle
-	const attempt string = "7"
 
 	user := msg.AuthorID
 	score := strings.TrimSpace(msg.Matches[0])
 	if score == "X" {
-		score = attempt
+		score = strconv.Itoa(attempts[game] + 1)
 	}
 	scores := []string{score}
 	err := processGame(user, game, scores)
 
 	return err
+}
+
+func WordleStats(msg joe.Message) error {
+	user := msg.AuthorID
+	var allScores map[string]UserScore = make(map[string]UserScore)
+	_, err := Edi.Store.Get(wordleBrainKey, &allScores)
+	if err != nil {
+		return err
+	}
+	var gameOrder = []string{Wordle, Dordle, Quordle, Octordle, Worldle}
+	if v, ok := allScores[user]; ok {
+		var output []string
+		for _, game := range gameOrder {
+			if gameData, ok := v.Games[game]; ok {
+				attempt := attempts[game]
+				avg := gameData.Score / float64(gameData.Games)
+				gamestr := fmt.Sprintf("%s: %.3f / %d [%d games]", game, avg, attempt, gameData.Games)
+				output = append(output, gamestr)
+			}
+		}
+		msg.Respond(strings.Join(output, "\n"))
+	} else {
+		msg.Respond("No stats yet")
+	}
+	return nil
 }

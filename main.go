@@ -72,6 +72,7 @@ func main() {
 	Edi.Hear("Quordle\\s\\d+\\s+(:.+:)(:.+:)\\s+(:.+:)(:.+:)", QuordleScore)
 	Edi.Hear("Octordle\\s#\\d+\\s+(:.+:)(:.+:)\\s+(:.+:)(:.+:)\\s+(:.+:)(:.+:)\\s+(:.+:)(:.+:)", OctordleScore)
 	Edi.Hear("Worldle\\s#\\d+\\s(.+)/\\d", WorldleScore)
+	Edi.Respond("wordle stats", WordleStats)
 
 	// Huwordle
 	Edi.Respond("huwordle", HuwordleNew)
