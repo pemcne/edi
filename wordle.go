@@ -15,6 +15,7 @@ const (
 	Quordle  string = "quordle"
 	Octordle string = "octordle"
 	Worldle  string = "worldle"
+	Tradle   string = "tradle"
 )
 
 type UserScore struct {
@@ -49,6 +50,7 @@ var attempts map[string]int = map[string]int{
 	Quordle:  9,
 	Octordle: 12,
 	Worldle:  6,
+	Tradle:   6,
 }
 
 func computeAverage(scores []string) (float64, error) {
@@ -83,10 +85,11 @@ func processGame(user, game string, scores []string) error {
 	if err != nil {
 		return err
 	}
-
+	if len(userScores.Games) == 0 {
+		userScores.Games = make(map[string]GameScore)
+	}
 	// Add the average to the scores
 	if _, ok := userScores.Games[game]; !ok {
-		userScores.Games = make(map[string]GameScore)
 		userScores.Games[game] = GameScore{}
 	}
 	g := userScores.Games[game]
@@ -167,6 +170,20 @@ func OctordleScore(msg joe.Message) error {
 
 func WorldleScore(msg joe.Message) error {
 	const game string = Worldle
+
+	user := msg.AuthorID
+	score := strings.TrimSpace(msg.Matches[0])
+	if score == "X" {
+		score = strconv.Itoa(attempts[game] + 1)
+	}
+	scores := []string{score}
+	err := processGame(user, game, scores)
+
+	return err
+}
+
+func TradleScore(msg joe.Message) error {
+	const game string = Tradle
 
 	user := msg.AuthorID
 	score := strings.TrimSpace(msg.Matches[0])
