@@ -32,7 +32,7 @@ const wordleBrainKey string = "wordle.scores"
 var emojiTranslate map[string]string = map[string]string{
 	":one:":     "1",
 	":two:":     "2",
-	":three":    "3",
+	":three:":   "3",
 	":four:":    "4",
 	":five:":    "5",
 	":six:":     "6",
@@ -124,7 +124,7 @@ func DordleScore(msg joe.Message) error {
 
 	user := msg.AuthorID
 	score := msg.Matches[0]
-	scores := strings.Split(score, "&")
+	scores := strings.Split(score, "&amp;")
 	for i, v := range scores {
 		if v == "X" {
 			scores[i] = strconv.Itoa(attempts[game] + 1)

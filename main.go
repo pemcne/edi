@@ -67,15 +67,16 @@ func main() {
 	Edi.Hear(".+", TriviaGuess)
 
 	// Wordle
-	Edi.Hear("Wordle\\s\\d+\\s(.+)/\\d", WordleScore)
-	Edi.Hear("Dordle\\s#\\d+\\s(.+)/\\d", DordleScore)
-	Edi.Hear("Quordle\\s\\d+\\s+(:.+:)(:.+:)\\s+(:.+:)(:.+:)", QuordleScore)
-	Edi.Hear("Octordle\\s#\\d+\\s+(:.+:)(:.+:)\\s+(:.+:)(:.+:)\\s+(:.+:)(:.+:)\\s+(:.+:)(:.+:)", OctordleScore)
-	Edi.Hear("Worldle\\s#\\d+\\s(.+)/\\d", WorldleScore)
+	Edi.Hear(`Wordle\s\d+\s(.+)/\d`, WordleScore)
+	Edi.Hear(`Dordle\s#\d+\s(.+)/\d`, DordleScore)
+	Edi.Hear(`Quordle\s\d+\s*(:.+:)(:.+:)\s+(:.+:)(:.+:)`, QuordleScore)
+	Edi.Hear(`Octordle\s#\d+\s*(:.+:)(:.+:)\s+(:.+:)(:.+:)\s+(:.+:)(:.+:)\s+(:.+:)(:.+:)`, OctordleScore)
+	Edi.Hear(`Worldle\s#\d+\s(.+)/\d`, WorldleScore)
+	Edi.Hear(`Tradle\s#\d+\s(.+)/\d`, TradleScore)
 	Edi.Respond("wordle stats", WordleStats)
 
 	// Huwordle
-	Edi.Respond("huwordle", HuwordleNew)
+	Edi.Respond("huwordle new", HuwordleNew)
 	Edi.Hear(`^\w+$`, HuwordleGuess)
 
 	// Schedules
