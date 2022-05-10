@@ -203,7 +203,7 @@ func WordleStats(msg joe.Message) error {
 	if err != nil {
 		return err
 	}
-	var gameOrder = []string{Wordle, Dordle, Quordle, Octordle, Worldle}
+	var gameOrder = []string{Wordle, Dordle, Quordle, Octordle, Worldle, Tradle}
 	if v, ok := allScores[user]; ok {
 		var output []string
 		for _, game := range gameOrder {
