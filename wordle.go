@@ -30,25 +30,26 @@ type GameScore struct {
 const wordleBrainKey string = "wordle.scores"
 
 var emojiTranslate map[string]string = map[string]string{
-	":one:":     "1",
-	":two:":     "2",
-	":three:":   "3",
-	":four:":    "4",
-	":five:":    "5",
-	":six:":     "6",
-	":seven:":   "7",
-	":eight:":   "8",
-	":nine:":    "9",
-	":clock1:":  "10",
-	":clock11:": "11",
-	":clock12:": "12",
+	":one:":        "1",
+	":two:":        "2",
+	":three:":      "3",
+	":four:":       "4",
+	":five:":       "5",
+	":six:":        "6",
+	":seven:":      "7",
+	":eight:":      "8",
+	":nine:":       "9",
+	":keycap_ten:": "10",
+	":clock11:":    "11",
+	":clock12:":    "12",
+	":clock1:":     "13",
 }
 
 var attempts map[string]int = map[string]int{
 	Wordle:   6,
 	Dordle:   7,
 	Quordle:  9,
-	Octordle: 12,
+	Octordle: 13,
 	Worldle:  6,
 	Tradle:   6,
 }
