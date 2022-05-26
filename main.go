@@ -76,6 +76,7 @@ func main() {
 	Edi.Respond("wordle stats", WordleStats)
 
 	// Huwordle
+	loadHuwordleFiles()
 	Edi.Respond("huwordle new", HuwordleNew)
 	Edi.Hear(`^\w+$`, HuwordleGuess)
 

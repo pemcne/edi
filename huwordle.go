@@ -41,9 +41,9 @@ type HuwordleState struct {
 	Letters LetterState `json:"letterState"`
 }
 
-func loadFiles() error {
+func loadHuwordleFiles() error {
+	Edi.Logger.Info("Loading the huwordle files")
 	if len(ANSWERS) == 0 || len(DICTIONARY) == 0 {
-		Edi.Logger.Info("Need to load the huwordle files")
 		err := json.Unmarshal([]byte(rawAnswers), &ANSWERS)
 		if err != nil {
 			return err
@@ -174,7 +174,6 @@ func setState(state HuwordleState) error {
 }
 
 func newWord(msg *joe.Message) error {
-	loadFiles()
 	randNum := RandomGenerator.Intn(len(ANSWERS))
 	word := ANSWERS[randNum]
 	var wordState []string
@@ -229,7 +228,7 @@ func HuwordleGuess(msg joe.Message) error {
 		})
 		return nil
 	}
-	fmt.Printf("Guess is '%s' and word is '%s'\n", guess, state.Word)
+	Edi.Logger.Debug("Huwordle: processing guess of '" + guess + "'")
 	results := processGuess(guess, &state)
 	guessEmoji := emoji(strings.Split(guess, ""))
 	output := fmt.Sprintf("%s\n%s\n", guessEmoji, strings.Join(results, ""))
