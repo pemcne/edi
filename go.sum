@@ -1,6 +1,7 @@
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/PuerkitoBio/goquery v1.8.0 h1:PJTF7AmFCFKk1N6V6jmKfrNH9tV5pNE6lZMkG0gta/U=
 github.com/PuerkitoBio/goquery v1.8.0/go.mod h1:ypIiRMtY7COPGk+I/YbZLbxsxn9g5ejnI2HSMtkjZvI=
+github.com/ajstarks/svgo v0.0.0-20200320125537-f189e35d30ca/go.mod h1:K08gAheRH3/J6wwsYMMT4xOr94bZjxIelGM0+d/wbFw=
 github.com/andybalholm/cascadia v1.3.1 h1:nhxRkql1kdYCc8Snf7D5/D3spOX+dBgjA6u8x004T2c=
 github.com/andybalholm/cascadia v1.3.1/go.mod h1:R4bJ1UQfqADjvDa4P6HZHLh/3OxWWEqc0Sk8XGwHqvA=
 github.com/benbjohnson/clock v1.1.0/go.mod h1:J11/hYXuz8f4ySSvYwY0FKfm+ezbsZBKZxNJlLklBHA=
@@ -29,6 +30,8 @@ github.com/lithammer/fuzzysearch v1.1.4 h1:HUP+RqrQOPN0UYXkoY427Z3RjqN0enA4h3/Lq
 github.com/lithammer/fuzzysearch v1.1.4/go.mod h1:1R1LRNk7yKid1BaQkmuLQaHruxcC4HmAH30Dh61Ih1Q=
 github.com/lithammer/fuzzysearch v1.1.5 h1:Ag7aKU08wp0R9QCfF4GoGST9HbmAIeLP7xwMrOBEp1c=
 github.com/lithammer/fuzzysearch v1.1.5/go.mod h1:1R1LRNk7yKid1BaQkmuLQaHruxcC4HmAH30Dh61Ih1Q=
+github.com/notnil/chess v1.8.0 h1:wU50vrPpH3kiT0WRC/6EN9kJpb7EBxFLCRf05TwXys8=
+github.com/notnil/chess v1.8.0/go.mod h1:cRuJUIBFq9Xki05TWHJxHYkC+fFpq45IWwk94DdlCrA=
 github.com/pemcne/joe v0.11.1-0.20220403212347-b9408549999d h1:rxFTWON6UGRV5uE6/8sGkhw3zlGUiInjp7y4ErC/bDE=
 github.com/pemcne/joe v0.11.1-0.20220403212347-b9408549999d/go.mod h1:IUVL6emrTqKfI9I9zt5j4noxBRZffHFApPbok2v9mNM=
 github.com/pemcne/slack-adapter/v2 v2.2.1-0.20220403212237-f6456ddb0c16 h1:qTECOgNUN1vRNwLH/vZDOO6BHrdtS2gTaIWOKHzyMDg=

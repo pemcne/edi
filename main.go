@@ -86,6 +86,13 @@ func main() {
 	Edi.Respond(`schedule list`, ScheduleList)
 	Edi.Respond(`schedule (remove|delete) (\d+)`, ScheduleRemove)
 
+	// Chess
+	initChess()
+	Edi.Respond("chess new", ChessNew)
+	Edi.Respond("chess state", ChessState)
+	Edi.Hear(`(\w+)`, ChessMove)
+	defer Engine.Close()
+
 	err := Edi.Run()
 	if err != nil {
 		Edi.Logger.Fatal(err.Error())

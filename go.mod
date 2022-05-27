@@ -15,6 +15,7 @@ require (
 require (
 	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
+	github.com/notnil/chess v1.8.0 // indirect
 	github.com/slack-go/slack v0.10.3 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
