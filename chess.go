@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -76,7 +77,11 @@ func storeChessState() error {
 func initChess() error {
 	// Initialize the engine
 	if Engine == nil {
-		eng, err := uci.New("stockfish")
+		fishPath := "stockfish"
+		if fishEnv, ok := os.LookupEnv("STOCKFISH_PATH"); ok {
+			fishPath = fishEnv
+		}
+		eng, err := uci.New(fishPath)
 		if err != nil {
 			return err
 		}
