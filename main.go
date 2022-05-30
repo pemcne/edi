@@ -99,7 +99,7 @@ func main() {
 	}
 	Edi.Respond("chess new", ChessNew)
 	Edi.Respond("chess state", ChessState)
-	Edi.Hear(`(\S+)`, ChessMove)
+	Edi.Hear(`^(\S+)$`, ChessMove)
 	defer Engine.Close()
 
 	err = Edi.Run()
