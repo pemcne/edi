@@ -75,12 +75,15 @@ func storeChessState() error {
 
 func initChess() error {
 	// Initialize the engine
-	eng, err := uci.New("stockfish")
-	if err != nil {
-		return err
-	}
-	if err := eng.Run(uci.CmdUCI, uci.CmdIsReady, uci.CmdUCINewGame); err != nil {
-		return err
+	if Engine == nil {
+		eng, err := uci.New("stockfish")
+		if err != nil {
+			return err
+		}
+		if err := eng.Run(uci.CmdUCI, uci.CmdIsReady, uci.CmdUCINewGame); err != nil {
+			return err
+		}
+		Engine = eng
 	}
 
 	// Load the existing progress if any
@@ -98,7 +101,6 @@ func initChess() error {
 	}
 	game := chess.NewGame(modules...)
 	Game = game
-	Engine = eng
 	return nil
 }
 
@@ -161,15 +163,13 @@ func emojiChessBoard(fen []byte, lastMove *chess.Move) (string, error) {
 	return output, nil
 }
 
-func printChessState(msg joe.Message, cpu *chess.Move) error {
-	Edi.Logger.Debug("Getting emoji board")
+func printChessState(msg joe.Message) error {
 	board, err := Game.Position().Board().MarshalText()
 	if err != nil {
 		return err
 	}
 	moves := Game.Moves()
 	var lastmove *chess.Move
-	Edi.Logger.Debug("Getting move history")
 	if len(moves) > 0 {
 		lastmove = moves[len(moves)-1]
 	}
@@ -178,9 +178,13 @@ func printChessState(msg joe.Message, cpu *chess.Move) error {
 		return err
 	}
 	output := ""
+	if Game.Outcome() != chess.NoOutcome {
+		Edi.Logger.Debug("Game complete")
+		output += fmt.Sprintf("Game complete: %s\n", Game.Method())
+	}
 	if lastmove != nil {
-		output = fmt.Sprintf("Last move: %s\n", lastmove.String())
-		if lastmove.HasTag(chess.Check) {
+		output += fmt.Sprintf("Last move: %s\n", lastmove.String())
+		if Game.Outcome() != chess.NoOutcome && lastmove.HasTag(chess.Check) {
 			output += "CHECK!\n"
 		}
 	}
@@ -198,7 +202,7 @@ func ChessNew(msg joe.Message) error {
 		return err
 	}
 	initChess()
-	return printChessState(msg, nil)
+	return printChessState(msg)
 }
 
 func ChessMove(msg joe.Message) error {
@@ -214,8 +218,8 @@ func ChessMove(msg joe.Message) error {
 		return err
 	}
 	if Game.Outcome() != chess.NoOutcome {
-		out := fmt.Sprintf("Game complete %s by %s", Game.Outcome(), Game.Method())
-		msg.Respond(out)
+		printChessState(msg)
+		return ChessNew(msg)
 	}
 
 	// Still going so CPU move
@@ -229,21 +233,20 @@ func ChessMove(msg joe.Message) error {
 		return err
 	}
 	if Game.Outcome() != chess.NoOutcome {
-		out := fmt.Sprintf("Game complete %s by %s", Game.Outcome(), Game.Method())
-		msg.Respond(out)
-	} else {
-		err := storeChessState()
-		if err != nil {
-			return err
-		}
-		return printChessState(msg, cpuMove)
+		printChessState(msg)
+		return ChessNew(msg)
 	}
-	return ChessNew(msg)
+	err := storeChessState()
+	if err != nil {
+		return err
+	}
+	return printChessState(msg)
+
 }
 
 func ChessState(msg joe.Message) error {
 	if !correctRoom(msg, CHESSROOMS) {
 		return nil
 	}
-	return printChessState(msg, nil)
+	return printChessState(msg)
 }
