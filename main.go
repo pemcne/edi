@@ -76,24 +76,33 @@ func main() {
 	Edi.Respond("wordle stats", WordleStats)
 
 	// Huwordle
-	loadHuwordleFiles()
+	err := loadHuwordleFiles()
+	if err != nil {
+		Edi.Logger.Error(err.Error())
+	}
 	Edi.Respond("huwordle new", HuwordleNew)
 	Edi.Hear(`^\w+$`, HuwordleGuess)
 
 	// Schedules
-	cronInit()
+	err = cronInit()
+	if err != nil {
+		Edi.Logger.Error(err.Error())
+	}
 	Edi.Respond(`schedule (?:new|add)(?: <#(\w+)\|.+>)? "(.*?)" ((?:.|\s)*)$`, ScheduleNew)
 	Edi.Respond(`schedule list`, ScheduleList)
 	Edi.Respond(`schedule (remove|delete) (\d+)`, ScheduleRemove)
 
 	// Chess
-	initChess()
+	err = initChess()
+	if err != nil {
+		Edi.Logger.Error(err.Error())
+	}
 	Edi.Respond("chess new", ChessNew)
 	Edi.Respond("chess state", ChessState)
 	Edi.Hear(`(\w+)`, ChessMove)
 	defer Engine.Close()
 
-	err := Edi.Run()
+	err = Edi.Run()
 	if err != nil {
 		Edi.Logger.Fatal(err.Error())
 	}
