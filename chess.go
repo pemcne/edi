@@ -16,18 +16,18 @@ var Game *chess.Game
 var Engine *uci.Engine
 
 var chessEmoji map[string]string = map[string]string{
-	"P": ":white_pawn:",
-	"N": ":white_knight:",
-	"B": ":white_bishop:",
-	"R": ":white_rook:",
-	"Q": ":white_queen:",
-	"K": ":white_king:",
-	"p": ":black_pawn:",
-	"n": ":black_knight:",
-	"b": ":black_bishop:",
-	"r": ":black_rook:",
-	"q": ":black_queen:",
-	"k": ":black_king:",
+	"P": "white_pawn",
+	"N": "white_knight",
+	"B": "white_bishop",
+	"R": "white_rook",
+	"Q": "white_queen",
+	"K": "white_king",
+	"p": "black_pawn",
+	"n": "black_knight",
+	"b": "black_bishop",
+	"r": "black_rook",
+	"q": "black_queen",
+	"k": "black_king",
 }
 
 var rankEmoji map[int]string = map[int]string{
@@ -39,6 +39,17 @@ var rankEmoji map[int]string = map[int]string{
 	6: ":six:",
 	7: ":seven:",
 	8: ":eight:",
+}
+
+var fileTranslate map[int]string = map[int]string{
+	1: "a",
+	2: "b",
+	3: "c",
+	4: "d",
+	5: "e",
+	6: "f",
+	7: "g",
+	8: "h",
 }
 
 var CHESSROOMS = []string{"C03GV6M95DM", "C03HC5JM28L"}
@@ -91,31 +102,51 @@ func initChess() error {
 	return nil
 }
 
-func emojiChessBoard(fen []byte) (string, error) {
+func emojiChessBoard(fen []byte, lastMove *chess.Move) (string, error) {
 	output := ""
-	// Start board with columns
+	// Start board with files
 	output += ":spacer::alphabet-white-a::alphabet-white-b::alphabet-white-c:"
 	output += ":alphabet-white-d::alphabet-white-e::alphabet-white-f::alphabet-white-g:"
 	output += ":alphabet-white-h:\n"
 	rankStrs := strings.Split(string(fen), "/")
+
+	preMove := ""
+	postMove := ""
+	if lastMove != nil {
+		preMove = lastMove.S1().String()
+		postMove = lastMove.S2().String()
+	}
 	count := 8
-	for rank, rankStr := range rankStrs {
+	for i, rankStr := range rankStrs {
+		rank := 8 - i
 		output += rankEmoji[count]
 		file := 0
+		// Figure out if it's a white or black square
 		for _, char := range strings.Split(rankStr, "") {
 			file++
+			color := "black"
+			if fmt.Sprintf("%s%d", fileTranslate[file], rank) == postMove {
+				color = "active"
+			} else if file%2 == (rank)%2 {
+				color = "white"
+			}
 			if val, ok := chessEmoji[char]; ok {
-				output += val
+				piece := fmt.Sprintf(":%s_%s:", val, color)
+				output += piece
 			} else {
 				sep, err := strconv.Atoi(char)
 				if err != nil {
 					return output, err
 				}
 				for i := 0; i < sep; i++ {
-					square := ":black_medium_square:"
-					if file%2 == (rank+1)%2 {
-						square = ":white_medium_square:"
+					// Since file is increasing in here, also calc color
+					color = "black_large"
+					if fmt.Sprintf("%s%d", fileTranslate[file], rank) == preMove {
+						color = "large_red"
+					} else if file%2 == (rank)%2 {
+						color = "white_large"
 					}
+					square := fmt.Sprintf(":%s_square:", color)
 					output += square
 					// Don't increment if we're on the last segment
 					if i < sep-1 {
@@ -131,26 +162,27 @@ func emojiChessBoard(fen []byte) (string, error) {
 }
 
 func printChessState(msg joe.Message, cpu *chess.Move) error {
-	position, err := Game.Position().MarshalText()
-	if err != nil {
-		return err
-	}
-	fmt.Printf("Position: %s\n", string(position))
-	Edi.Logger.Debug("Getting game board text")
+	Edi.Logger.Debug("Getting emoji board")
 	board, err := Game.Position().Board().MarshalText()
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Board: %s\n", string(board))
-	Edi.Logger.Debug("Getting emoji board")
-	txt, err := emojiChessBoard(board)
+	moves := Game.Moves()
+	var lastmove *chess.Move
+	Edi.Logger.Debug("Getting move history")
+	if len(moves) > 0 {
+		lastmove = moves[len(moves)-1]
+	}
+	txt, err := emojiChessBoard(board, lastmove)
 	if err != nil {
 		return err
 	}
 	output := ""
-	Edi.Logger.Debug("Setting cpu move if any")
-	if cpu != nil {
-		output = fmt.Sprintf("CPU move: %s\n", cpu.String())
+	if lastmove != nil {
+		output = fmt.Sprintf("Last move: %s\n", lastmove.String())
+		if lastmove.HasTag(chess.Check) {
+			output += "CHECK!\n"
+		}
 	}
 	output += txt
 	msg.Respond(output)
