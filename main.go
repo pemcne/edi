@@ -94,13 +94,14 @@ func main() {
 	Edi.Respond(`schedule (remove|delete) (\d+)`, ScheduleRemove)
 
 	// Chess
-	err = initChess()
+	err = initChess(false)
 	if err != nil {
 		Edi.Logger.Error(err.Error())
 	}
 	Edi.Respond("chess new", ChessNew)
 	Edi.Respond("chess state", ChessState)
 	Edi.Hear(`^(\S+)$`, ChessMove)
+	Edi.Respond(`chess elo set (\d+)`, ChessElo)
 	defer Engine.Close()
 
 	err = Edi.Run()

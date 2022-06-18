@@ -56,6 +56,7 @@ var fileTranslate map[int]string = map[int]string{
 var CHESSROOMS = []string{"C03GV6M95DM", "C03HC5JM28L"}
 
 const chessBrainKey string = "chess.board"
+const chessEloKey string = "chess.elo"
 
 func loadChessProgress() (string, error) {
 	progress := ""
@@ -74,9 +75,9 @@ func storeChessState() error {
 	return Edi.Store.Set(chessBrainKey, string(state))
 }
 
-func initChess() error {
+func initChess(force bool) error {
 	// Initialize the engine
-	if Engine == nil {
+	if Engine == nil || force {
 		fishPath := "stockfish"
 		if fishEnv, ok := os.LookupEnv("STOCKFISH_PATH"); ok {
 			fishPath = fishEnv
@@ -85,7 +86,18 @@ func initChess() error {
 		if err != nil {
 			return err
 		}
-		if err := eng.Run(uci.CmdUCI, uci.CmdIsReady, uci.CmdUCINewGame); err != nil {
+		elo := ""
+		ok, err := Edi.Store.Get(chessEloKey, &elo)
+		if err != nil {
+			return err
+		}
+		if !ok {
+			elo = "1500"
+		}
+		Edi.Logger.Info("Setting chess elo to " + elo)
+		skill := uci.CmdSetOption{Name: "UCI_Elo", Value: elo}
+		limit := uci.CmdSetOption{Name: "UCI_LimitStrength", Value: "true"}
+		if err := eng.Run(uci.CmdUCI, uci.CmdIsReady, limit, skill, uci.CmdUCINewGame); err != nil {
 			return err
 		}
 		Engine = eng
@@ -131,11 +143,11 @@ func emojiChessBoard(fen []byte, lastMove *chess.Move) (string, error) {
 		// Figure out if it's a white or black square
 		for _, char := range strings.Split(rankStr, "") {
 			file++
-			color := "black"
+			color := "white"
 			if fmt.Sprintf("%s%d", fileTranslate[file], rank) == postMove {
 				color = "active"
 			} else if file%2 == (rank)%2 {
-				color = "white"
+				color = "black"
 			}
 			if val, ok := chessEmoji[char]; ok {
 				piece := fmt.Sprintf(":%s_%s:", val, color)
@@ -147,11 +159,11 @@ func emojiChessBoard(fen []byte, lastMove *chess.Move) (string, error) {
 				}
 				for i := 0; i < sep; i++ {
 					// Since file is increasing in here, also calc color
-					color = "black_large"
+					color = "white_large"
 					if fmt.Sprintf("%s%d", fileTranslate[file], rank) == preMove {
 						color = "large_red"
 					} else if file%2 == (rank)%2 {
-						color = "white_large"
+						color = "black_large"
 					}
 					square := fmt.Sprintf(":%s_square:", color)
 					output += square
@@ -206,7 +218,7 @@ func ChessNew(msg joe.Message) error {
 	if err != nil {
 		return err
 	}
-	initChess()
+	initChess(false)
 	return printChessState(msg)
 }
 
@@ -254,4 +266,16 @@ func ChessState(msg joe.Message) error {
 		return nil
 	}
 	return printChessState(msg)
+}
+
+func ChessElo(msg joe.Message) error {
+	elo := msg.Matches[0]
+	err := Edi.Store.Set(chessEloKey, elo)
+	if err != nil {
+		return err
+	}
+	// Force reset the engine to the right elo
+	initChess(true)
+	msg.Respond("Elo now set at " + elo)
+	return nil
 }
