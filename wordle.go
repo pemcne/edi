@@ -10,12 +10,13 @@ import (
 )
 
 const (
-	Wordle   string = "wordle"
-	Dordle   string = "dordle"
-	Quordle  string = "quordle"
-	Octordle string = "octordle"
-	Worldle  string = "worldle"
-	Tradle   string = "tradle"
+	Wordle    string = "wordle"
+	Dordle    string = "dordle"
+	Quordle   string = "quordle"
+	Octordle  string = "octordle"
+	Worldle   string = "worldle"
+	Tradle    string = "tradle"
+	Explordle string = "explordle"
 )
 
 type UserScore struct {
@@ -46,12 +47,13 @@ var emojiTranslate map[string]string = map[string]string{
 }
 
 var attempts map[string]int = map[string]int{
-	Wordle:   6,
-	Dordle:   7,
-	Quordle:  9,
-	Octordle: 13,
-	Worldle:  6,
-	Tradle:   6,
+	Wordle:    6,
+	Dordle:    7,
+	Quordle:   9,
+	Octordle:  13,
+	Worldle:   6,
+	Tradle:    6,
+	Explordle: 7,
 }
 
 func computeAverage(scores []string) (float64, error) {
@@ -197,6 +199,20 @@ func TradleScore(msg joe.Message) error {
 	return err
 }
 
+func ExplordleScore(msg joe.Message) error {
+	const game string = Explordle
+
+	user := msg.AuthorID
+	score := strings.TrimSpace(msg.Matches[0])
+	if score == "X" {
+		score = strconv.Itoa(attempts[game] + 1)
+	}
+	scores := []string{score}
+	err := processGame(user, game, scores)
+
+	return err
+}
+
 func WordleStats(msg joe.Message) error {
 	user := msg.AuthorID
 	var allScores map[string]UserScore = make(map[string]UserScore)
@@ -204,7 +220,7 @@ func WordleStats(msg joe.Message) error {
 	if err != nil {
 		return err
 	}
-	var gameOrder = []string{Wordle, Dordle, Quordle, Octordle, Worldle, Tradle}
+	var gameOrder = []string{Wordle, Dordle, Quordle, Octordle, Worldle, Tradle, Explordle}
 	if v, ok := allScores[user]; ok {
 		var output []string
 		for _, game := range gameOrder {
