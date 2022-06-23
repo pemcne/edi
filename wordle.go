@@ -204,7 +204,7 @@ func ExplordleScore(msg joe.Message) error {
 
 	user := msg.AuthorID
 	score := strings.TrimSpace(msg.Matches[0])
-	if score == "X" {
+	if score == "x" {
 		score = strconv.Itoa(attempts[game] + 1)
 	}
 	scores := []string{score}
