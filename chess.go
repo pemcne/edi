@@ -58,6 +58,8 @@ var CHESSROOMS = []string{"C03GV6M95DM", "C03HC5JM28L"}
 const chessBrainKey string = "chess.board"
 const chessEloKey string = "chess.elo"
 
+var moveTime time.Duration = time.Second / 100
+
 func loadChessProgress() (string, error) {
 	progress := ""
 	_, err := Edi.Store.Get(chessBrainKey, &progress)
@@ -101,6 +103,16 @@ func initChess(force bool) error {
 			return err
 		}
 		Engine = eng
+
+		// See if there's a different move time to load from env
+		if mt, ok := os.LookupEnv("STOCKFISH_MOVETIME"); ok {
+			Edi.Logger.Debug("Loading move time from env")
+			moveTime, err = time.ParseDuration(mt)
+			if err != nil {
+				return err
+			}
+		}
+		Edi.Logger.Info("Chess move time: " + moveTime.String())
 	}
 
 	// Load the existing progress if any
