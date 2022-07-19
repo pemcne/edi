@@ -102,6 +102,7 @@ func main() {
 	Edi.Respond("chess state", ChessState)
 	Edi.Hear(`^(\S+)$`, ChessMove)
 	Edi.Respond(`chess elo set (\d+)`, ChessElo)
+	Edi.Respond("chess info", ChessInfo)
 	defer Engine.Close()
 
 	err = Edi.Run()

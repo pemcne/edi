@@ -291,3 +291,10 @@ func ChessElo(msg joe.Message) error {
 	msg.Respond("Elo now set at " + elo)
 	return nil
 }
+
+func ChessInfo(msg joe.Message) error {
+	state := Game.Position().String()
+	out := fmt.Sprintf("Board position: `%s`", state)
+	msg.Respond(out)
+	return nil
+}
