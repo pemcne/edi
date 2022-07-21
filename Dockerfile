@@ -7,11 +7,11 @@ RUN go install
 FROM debian:11-slim as run
 WORKDIR /run
 RUN apt -y update && \
-    apt -y install stockfish && \
+    apt -y install stockfish ca-certificates && \
     apt -y autoclean && \
     apt clean
 
 ENV STOCKFISH_PATH /usr/games/stockfish
-COPY --from=builder /go/bin/edi /run/edi 
+COPY --from=builder /go/bin/edi /bin/edi 
 
-CMD ["/run/edi"]
+ENTRYPOINT ["/bin/edi"]
