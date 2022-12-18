@@ -5,9 +5,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/go-joe/file-memory"
 	"github.com/go-joe/joe"
 	"github.com/go-joe/slack-adapter/v2"
+	"github.com/pemcne/firestore-memory"
 	"go.uber.org/zap/zapcore"
 )
 
@@ -24,7 +24,7 @@ func correctRoom(msg joe.Message, rooms []string) bool {
 	return false
 }
 
-func loadModules() []joe.Module {
+func loadModules(name string) []joe.Module {
 	var modules []joe.Module
 	// See if we want to load Slack
 	if token, t_ok := os.LookupEnv("SLACK_TOKEN"); t_ok {
@@ -39,15 +39,23 @@ func loadModules() []joe.Module {
 		}
 	}
 	// Load store
-	modules = append(modules, file.Memory("brain.json"))
+	if project, p_ok := os.LookupEnv("FIRESTORE_PROJECT"); p_ok {
+		memOpt := firestore.WithCollection(name)
+		modules = append(modules, firestore.Memory(project, memOpt))
+	}
+
 	// For debugging
 	modules = append(modules, joe.WithLogLevel(zapcore.DebugLevel))
 	return modules
 }
 
 func main() {
-	modules := loadModules()
-	Edi = joe.New("Edi", modules...)
+	name, ok := os.LookupEnv("BOT_NAME")
+	if !ok {
+		name = "Edi"
+	}
+	modules := loadModules(name)
+	Edi = joe.New(name, modules...)
 
 	CommonResponses(Edi)
 
@@ -103,7 +111,9 @@ func main() {
 	Edi.Hear(`^(\S+)$`, ChessMove)
 	Edi.Respond(`chess elo set (\d+)`, ChessElo)
 	Edi.Respond("chess info", ChessInfo)
-	defer Engine.Close()
+	if Engine != nil {
+		defer Engine.Close()
+	}
 
 	err = Edi.Run()
 	if err != nil {
