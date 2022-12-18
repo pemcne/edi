@@ -15,7 +15,12 @@ const CORRECT string = ":large_green_square:"
 const PRESENT string = ":large_yellow_square:"
 const ABSENT string = ":black_large_square:"
 
-var HUWORDLEROOMS = []string{"", "C035YQ3UG79", "C033N9SPX33"}
+var HUWORDLEROOMS = []string{
+	"", // terminal
+	"C035YQ3UG79", // personal
+	"C033N9SPX33", // testing
+	"C04GESW4WKS", // rdc
+}
 
 const huwordleStoreKey string = "huwordle.word"
 

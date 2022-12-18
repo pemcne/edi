@@ -20,7 +20,12 @@ type Trivia struct {
 
 const triviaStoreKey string = "edi.trivia"
 
-var TRIVIAROOMS = []string{"", "C035YQ3UG79", "CFZAU0M2M"}
+var TRIVIAROOMS = []string{
+	"", // Terminal
+	"C035YQ3UG79", // personal
+	"CFZAU0M2M", // testing
+	"C04FTKUMDBN", // rdc
+}
 
 func pruneAnswer(answer string) []string {
 	// This just compiles a list of possible answers to assist
