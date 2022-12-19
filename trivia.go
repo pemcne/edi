@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"math"
 	"net/http"
 	"regexp"
@@ -21,9 +22,9 @@ type Trivia struct {
 const triviaStoreKey string = "edi.trivia"
 
 var TRIVIAROOMS = []string{
-	"", // Terminal
-	"C035YQ3UG79", // personal
-	"CFZAU0M2M", // testing
+	"",            // Terminal
+	"C035YQ3UG79", // testing
+	"CFZAU0M2M",   // personal
 	"C04FTKUMDBN", // rdc
 }
 
@@ -50,8 +51,10 @@ func pruneAnswer(answer string) []string {
 }
 
 func newTriviaQuestion(t *Trivia) error {
-	url := "https://trivia.fyi/random-trivia-questions/"
-	resp, err := http.Get(url)
+	payload := []byte(`num=1&add=address&unique=true`)
+	body := bytes.NewReader(payload)
+	url := "https://www.getrandomthings.com/data/random-question-answer.php"
+	resp, err := http.Post(url, "application/x-www-form-urlencoded; charset=UTF-8", body)
 	if err != nil {
 		return err
 	}
@@ -61,8 +64,8 @@ func newTriviaQuestion(t *Trivia) error {
 	if err != nil {
 		return err
 	}
-	t.Question = strings.TrimSpace(doc.Find("a.query-title-link").First().Text())
-	t.RawAnswer = strings.TrimSpace(doc.Find("div.su-spoiler-content").First().Text())
+	t.Question = strings.TrimSpace(doc.Find("div.name2").First().Text())
+	t.RawAnswer = strings.TrimSpace(doc.Find("div#result").First().Text())
 	t.Answers = pruneAnswer(t.RawAnswer)
 	Edi.Logger.Info("Trivia question: " + t.Question + " - " + t.RawAnswer)
 	return nil
