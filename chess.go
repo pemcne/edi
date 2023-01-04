@@ -53,7 +53,11 @@ var fileTranslate map[int]string = map[int]string{
 	8: "h",
 }
 
-var CHESSROOMS = []string{"C03GV6M95DM", "C03HC5JM28L"}
+var CHESSROOMS = []string{
+	"C03GV6M95DM", // Personal
+	"C03HC5JM28L", // Testing
+	"C04HD8TQL85", // RDC
+}
 
 const chessBrainKey string = "chess.board"
 const chessEloKey string = "chess.elo"
