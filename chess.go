@@ -214,6 +214,7 @@ func printChessState(msg joe.Message) error {
 	if Game.Outcome() != chess.NoOutcome {
 		Edi.Logger.Debug("Game complete")
 		output += fmt.Sprintf("Game complete: %s\n", Game.Method())
+		output += fmt.Sprintf("Move history: %s\n", Game.String())
 	}
 	if lastmove != nil {
 		output += fmt.Sprintf("Last move: %s\n", lastmove.String())
