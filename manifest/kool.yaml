@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: edi
+  labels:
+    app: edi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: edi
+  template:
+    metadata:
+      labels:
+        app: edi
+    spec:
+      containers:
+      - name: edi
+        image: ghcr.io/pemcne/edi:main
+        imagePullPolicy: Always
+        env:
+          - name: BOT_NAME
+            value: Edi
+          - name: FIRESTORE_PROJECT
+            value: adroit-poet-297818
+          - name: STOCKFISH_MOVETIME
+            value: 10ms
+          - name: SLACK_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: kool-slack
+                key: token
+                optional: false
+          - name: SLACK_APP_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: kool-slack
+                key: app_token
+                optional: false
