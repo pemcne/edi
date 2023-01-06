@@ -8,7 +8,6 @@ import (
 	"github.com/go-joe/joe"
 	"github.com/go-joe/slack-adapter/v2"
 	"github.com/pemcne/firestore-memory"
-	"go.uber.org/zap/zapcore"
 )
 
 var Edi *joe.Bot
@@ -45,7 +44,7 @@ func loadModules(name string) []joe.Module {
 	}
 
 	// For debugging
-	modules = append(modules, joe.WithLogLevel(zapcore.DebugLevel))
+	// modules = append(modules, joe.WithLogLevel(zapcore.DebugLevel))
 	return modules
 }
 
