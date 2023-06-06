@@ -8,6 +8,8 @@ import (
 	"github.com/go-joe/joe"
 	"github.com/go-joe/slack-adapter/v2"
 	"github.com/pemcne/firestore-memory"
+
+	slackapi "github.com/slack-go/slack"
 )
 
 var Edi *joe.Bot
@@ -32,6 +34,10 @@ func loadModules(name string) []joe.Module {
 				token,
 				slack.WithSocketMode(app_token),
 				slack.WithListenPassive(),
+				slack.WithMessageParams(slackapi.PostMessageParameters{
+					Markdown: true,
+					AsUser:   true,
+				}),
 				// slack.WithDebug(true),
 			)
 			modules = append(modules, adapter)
