@@ -1,10 +1,10 @@
-FROM golang:latest as builder
+FROM golang:bookworm as builder
 
 WORKDIR /build
 COPY . ./
 RUN go install
 
-FROM debian:11-slim as run
+FROM debian:12-slim as run
 WORKDIR /run
 RUN apt -y update && \
     apt -y install stockfish ca-certificates && \
