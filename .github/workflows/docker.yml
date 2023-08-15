@@ -6,8 +6,6 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  GKE_CLUSTER: bots
-  GKE_ZONE: us-central1-c
 
 jobs:
   build:
@@ -33,18 +31,3 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-      # - id: 'auth'
-      #   name: 'Authenticate to Google Cloud'
-      #   uses: 'google-github-actions/auth@v0'
-      #   with:
-      #     token_format: 'access_token'
-      #     workload_identity_provider: ${{ secrets.GCP_IDP }}
-      #     service_account: ${{ secrets.GCP_SERVICEACCOUNT }}
-      # - name: Set up GKE credentials
-      #   uses: google-github-actions/get-gke-credentials@v0
-      #   with:
-      #     cluster_name: ${{ env.GKE_CLUSTER }}
-      #     location: ${{ env.GKE_ZONE }}
-      # - run: |
-      #     kubectl rollout restart deployment/edi
-      #     kubectl rollout restart deployment/fran
