@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'server'
+      - '.github/**'
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
@@ -35,7 +38,6 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - run: echo '${{ secrets.GCP_ACCOUNT }}' > sa.json
       - uses: 'google-github-actions/auth@v1'
         with:
           credentials_json: ${{ secrets.GCP_ACCOUNT }}
