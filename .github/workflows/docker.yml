@@ -31,3 +31,13 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+  update:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo '${{ secrets.GCP_ACCOUNT }}' > sa.json
+      - uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: ${{ secrets.GCP_ACCOUNT }}
+      - uses: 'google-github-actions/setup-gcloud@v1'
+      - run: gcloud compute instances reset bots --zone us-central1-c
