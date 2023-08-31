@@ -9,6 +9,7 @@ services:
       - edi.env
     volumes:
       - /usr/share/zoneinfo/America/New_York:/etc/localtime
+    restart: unless-stopped
   fran:
     image: ghcr.io/pemcne/edi:main
     environment:
@@ -18,3 +19,4 @@ services:
       - fran.env
     volumes:
       - /usr/share/zoneinfo/America/New_York:/etc/localtime
+    restart: unless-stopped
