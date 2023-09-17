@@ -90,29 +90,6 @@ func emoji(word []string) string {
 	return output
 }
 
-func arrayIn(arr []string, el string) int {
-	index := -1
-	for k, v := range arr {
-		if v == el {
-			index = k
-		}
-	}
-	return index
-}
-
-func arrayRemove(arr []string, i int) []string {
-	if i == -1 {
-		return arr
-	} else if i == len(arr)-1 {
-		return arr[:len(arr)-1]
-	} else {
-		copy(arr[i:], arr[i+1:])
-		arr[len(arr)-1] = ""
-		arr = arr[:len(arr)-1]
-		return arr
-	}
-}
-
 func processGuess(guess string, state *HuwordleState) []string {
 	word := state.Word
 	wordchars := strings.Split(word, "")
@@ -130,20 +107,20 @@ func processGuess(guess string, state *HuwordleState) []string {
 			// Update letter state
 			state.State[i] = emoji([]string{wordLetter})
 			letters.Unknown[i] = ""
-			if arrayIn(letters.Unknown, guessLetter) == -1 {
-				letters.Present = arrayRemove(letters.Present, arrayIn(letters.Present, guessLetter))
+			if inArray(letters.Unknown, guessLetter) == -1 {
+				letters.Present = arrayRemove(letters.Present, inArray(letters.Present, guessLetter))
 			}
 		}
 	}
 	for i := range wordchars {
 		guessLetter := guesschars[i]
 		if guessLetter != "" {
-			index := arrayIn(wordchars, guessLetter)
+			index := inArray(wordchars, guessLetter)
 			if index == -1 {
 				// Letter isn't in the word
 				output[i] = ABSENT
-				inAbsent := arrayIn(letters.Absent, guessLetter)
-				inPresent := arrayIn(letters.Present, guessLetter)
+				inAbsent := inArray(letters.Absent, guessLetter)
+				inPresent := inArray(letters.Present, guessLetter)
 				if inAbsent == -1 && inPresent == -1 {
 					letters.Absent = append(letters.Absent, guessLetter)
 				}
@@ -151,7 +128,7 @@ func processGuess(guess string, state *HuwordleState) []string {
 				// Letter is in the word but not the right spot
 				output[i] = PRESENT
 				wordchars[index] = ""
-				if arrayIn(letters.Present, guessLetter) == -1 {
+				if inArray(letters.Present, guessLetter) == -1 {
 					letters.Present = append(letters.Present, guessLetter)
 				}
 			}
@@ -227,7 +204,7 @@ func HuwordleGuess(msg joe.Message) error {
 	if !won && (len(guess) != len(state.Word)) {
 		return nil
 	}
-	if arrayIn(DICTIONARY, guess) == -1 {
+	if inArray(DICTIONARY, guess) == -1 {
 		msg.React(reactions.Reaction{
 			Shortcode: "x",
 		})
