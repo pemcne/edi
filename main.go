@@ -88,6 +88,7 @@ func main() {
 	Edi.Hear(`Tradle\s#\d+\s(.+)/\d`, TradleScore)
 	Edi.Hear(`Explordle\s\d+\s(.+)/\d`, ExplordleScore)
 	Edi.Respond("wordle stats", WordleStats)
+	Edi.Respond("wordle solve", SolveWordle)
 
 	// Huwordle
 	err := loadHuwordleFiles()
