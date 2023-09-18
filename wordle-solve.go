@@ -38,16 +38,17 @@ type SolveLetterState struct {
 type Solution struct {
 	Solution string `json:"solution"`
 	GameId   int    `json:"days_since_launch"`
+	Date     string `json:"print_date"`
 }
 
 func getSolution(solution *Solution) error {
+	now := time.Now()
+	current := now.Format("2006-01-02")
 	_, err := Edi.Store.Get(wordleSolveBrainKey, solution)
 	if err != nil {
 		return err
 	}
-	if solution.Solution == "" {
-		now := time.Now()
-		current := now.Format("2006-01-02")
+	if solution.Date != current {
 		url := fmt.Sprintf("https://www.nytimes.com/svc/wordle/v2/%s.json", current)
 		resp, err := http.Get(url)
 		if err != nil {
@@ -66,11 +67,15 @@ func getSolution(solution *Solution) error {
 
 func nextGuess(state *WordState) string {
 	best := Best{}
+	// Loop through every word in the answers
+	// TODO: can probably trim this down over time
 	for _, word := range answers {
 		score := 0.0
 		seen := make([]bool, 26)
 		yellows := make([]rune, len(state.present))
 		copy(yellows, state.present)
+		// For each letter in the word, compare that to the
+		// letter state
 		for idx, letter := range word {
 			letterScore := 0.0
 			history := state.history[idx]
@@ -78,9 +83,11 @@ func nextGuess(state *WordState) string {
 			for _, histLetter := range history {
 				if histLetter.letter == letter {
 					if histLetter.green {
+						// Green match so score that highly
 						letterScore += weights[letterIdx] * 10.0
 						break
 					} else if histLetter.yellow {
+						// Seen this letter as a yellow here, mark it down
 						letterScore += weights[letterIdx] * -5.0
 						break
 					}
@@ -90,14 +97,17 @@ func nextGuess(state *WordState) string {
 			if letterScore == 0.0 {
 				present := inArray(yellows, letter)
 				if present != -1 {
+					// The letter might be somewhere in here
 					letterScore += weights[letterIdx] * 2.0
 					yellows = arrayRemove(yellows, present)
 				}
 				missed := inArray(state.absent, letter)
 				multi := 1.0
 				if missed != -1 {
+					// If the letter is gray, score it low
 					multi = -10.0
 				} else if seen[letterIdx] {
+					// Just a small padding to discourage repeat letters
 					multi = -0.5
 				}
 				letterScore += weights[letterIdx] * multi
