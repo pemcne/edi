@@ -14,7 +14,9 @@ import (
 var wordleAnswers string
 var answers []string
 
-var weights [26]float64
+//go:embed wordle-data/weights.json
+var rawWeights string
+var weights map[int][26]float64
 
 const wordleSolveBrainKey string = "wordle.solve"
 
@@ -84,11 +86,11 @@ func nextGuess(state *WordState) string {
 				if histLetter.letter == letter {
 					if histLetter.green {
 						// Green match so score that highly
-						letterScore += weights[letterIdx] * 10.0
+						letterScore += weights[idx][letterIdx] * 10.0
 						break
 					} else if histLetter.yellow {
 						// Seen this letter as a yellow here, mark it down
-						letterScore += weights[letterIdx] * -5.0
+						letterScore += weights[idx][letterIdx] * -5.0
 						break
 					}
 				}
@@ -98,7 +100,7 @@ func nextGuess(state *WordState) string {
 				present := inArray(yellows, letter)
 				if present != -1 {
 					// The letter might be somewhere in here
-					letterScore += weights[letterIdx] * 2.0
+					letterScore += weights[idx][letterIdx] * 2.0
 					yellows = arrayRemove(yellows, present)
 				}
 				missed := inArray(state.absent, letter)
@@ -110,7 +112,7 @@ func nextGuess(state *WordState) string {
 					// Just a small padding to discourage repeat letters
 					multi = -0.5
 				}
-				letterScore += weights[letterIdx] * multi
+				letterScore += weights[idx][letterIdx] * multi
 			}
 			seen[letterIdx] = true
 			score += letterScore
@@ -193,17 +195,27 @@ func printGame(state *WordState, game int) string {
 	return out
 }
 
-func SolveWordle(msg joe.Message) error {
+func loadWordleSolveFiles() error {
+	Edi.Logger.Info("Loading worlde solve files")
 	err := json.Unmarshal([]byte(wordleAnswers), &answers)
 	if err != nil {
 		return err
 	}
 
-	// Predetermined by calculating the frequency of every letter in the answer list
-	weights = [26]float64{0.4204863825696852, 0.11753925024030784, 0.1493015059275875, 0.179689202178789, 0.4560621595642354, 0.07815123357898135, 0.11993591797500823, 0.13152835629605908, 0.2778436398590192, 0.02149951938481256, 0.1107657801986544, 0.24555270746555496, 0.1463024671579624, 0.2183627042614546, 0.30796859980775115, 0.14750720922781183, 0.008330663248958666, 0.30723165652034456, 0.4692950977250802, 0.24038128804870088, 0.187526433835309, 0.05173021467478375, 0.08050304389618715, 0.02148349887856456, 0.15716116629285495, 0.030362063441204717}
+	// Predetermined by calculating the frequency of every letter in the word list
+	// Weights are calculated by taking the frequency of each letter for each
+	// slot position
+	// eg Freq of the letter 'a' being in the first letter slot
+	err = json.Unmarshal([]byte(rawWeights), &weights)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
+func SolveWordle(msg joe.Message) error {
 	solution := &Solution{}
-	err = getSolution(solution)
+	err := getSolution(solution)
 	if err != nil {
 		return err
 	}
