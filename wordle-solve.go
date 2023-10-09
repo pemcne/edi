@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"net/http"
 	"time"
 
@@ -71,6 +72,7 @@ func nextGuess(state *WordState) string {
 	best := Best{}
 	// Loop through every word in the answers
 	// TODO: can probably trim this down over time
+WORD:
 	for _, word := range answers {
 		score := 0.0
 		seen := make([]bool, 26)
@@ -83,43 +85,50 @@ func nextGuess(state *WordState) string {
 			history := state.history[idx]
 			letterIdx := int(letter - 'a')
 			for _, histLetter := range history {
-				if histLetter.letter == letter {
-					if histLetter.green {
-						// Green match so score that highly
+				if histLetter.green {
+					if histLetter.letter == letter {
 						letterScore += weights[idx][letterIdx] * 10.0
 						break
-					} else if histLetter.yellow {
-						// Seen this letter as a yellow here, mark it down
-						letterScore += weights[idx][letterIdx] * -5.0
-						break
+					} else {
+						// Hard mode
+						// Have a green that doesn't match the current letter, skip entirely
+						continue WORD
 					}
+				}
+				if histLetter.letter == letter && histLetter.yellow {
+					// Seen this letter as a yellow here, skip
+					continue WORD
 				}
 			}
 			// This is the fall through if no history found, normal weight
 			if letterScore == 0.0 {
+				missed := inArray(state.absent, letter)
+				multi := 1.0
+				if missed != -1 {
+					// If the letter is gray, skip
+					continue WORD
+				} else if seen[letterIdx] {
+					// Just a small padding to discourage repeat letters
+					multi = -0.25
+				}
 				present := inArray(yellows, letter)
 				if present != -1 {
 					// The letter might be somewhere in here
 					letterScore += weights[idx][letterIdx] * 2.0
 					yellows = arrayRemove(yellows, present)
 				}
-				missed := inArray(state.absent, letter)
-				multi := 1.0
-				if missed != -1 {
-					// If the letter is gray, score it low
-					multi = -10.0
-				} else if seen[letterIdx] {
-					// Just a small padding to discourage repeat letters
-					multi = -0.5
-				}
 				letterScore += weights[idx][letterIdx] * multi
 			}
 			seen[letterIdx] = true
 			score += letterScore
 		}
+		// Add some randomization to the first guess
+		if len(state.history[0]) == 0 {
+			score = score * rand.Float64()
+		}
 		// Hard mode check, make sure you're using all info
 		if len(yellows) > 0 {
-			score = 0
+			continue WORD
 		}
 		if best.Weight < score {
 			best.Weight = score
