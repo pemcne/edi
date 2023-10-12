@@ -104,18 +104,17 @@ WORD:
 			if letterScore == 0.0 {
 				missed := inArray(state.absent, letter)
 				multi := 1.0
-				if missed != -1 {
-					// If the letter is gray, skip
-					continue WORD
-				} else if seen[letterIdx] {
-					// Just a small padding to discourage repeat letters
-					multi = -0.25
-				}
 				present := inArray(yellows, letter)
 				if present != -1 {
 					// The letter might be somewhere in here
 					letterScore += weights[idx][letterIdx] * 2.0
 					yellows = arrayRemove(yellows, present)
+				} else if missed != -1 {
+					// If the letter is gray, skip
+					continue WORD
+				} else if seen[letterIdx] {
+					// Just a small padding to discourage repeat letters
+					multi = -0.25
 				}
 				letterScore += weights[idx][letterIdx] * multi
 			}
