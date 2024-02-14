@@ -183,8 +183,12 @@ func scoreGuess(guess, solution string, state *WordState) bool {
 	return false
 }
 
-func printGame(state *WordState, game int) string {
-	out := fmt.Sprintf("Wordle %d %d/6*\n", game, len(state.history[0]))
+func printGame(state *WordState, game int, correct bool) string {
+	total := "X"
+	if correct {
+		total = fmt.Sprintf("%d", len(state.history[0]))
+	}
+	out := fmt.Sprintf("Wordle %d %s/6*\n", game, total)
 	for guess := len(state.history[0]) - 1; guess >= 0; guess-- {
 		line := ""
 		for letter := 0; letter < 5; letter++ {
@@ -233,15 +237,16 @@ func SolveWordle(msg joe.Message) error {
 		state.history[i] = make([]SolveLetterState, 0)
 	}
 	guesses := []string{}
+	correct := false
 	for i := 0; i < 6; i++ {
 		guess := nextGuess(&state)
 		guesses = append(guesses, guess)
-		correct := scoreGuess(guess, solution.Solution, &state)
+		correct = scoreGuess(guess, solution.Solution, &state)
 		if correct {
 			break
 		}
 	}
-	msg.Respond(printGame(&state, solution.GameId))
+	msg.Respond(printGame(&state, solution.GameId, correct))
 	outGuesses, err := json.Marshal(guesses)
 	if err != nil {
 		return err
