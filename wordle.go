@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -10,13 +11,14 @@ import (
 )
 
 const (
-	Wordle    string = "wordle"
-	Dordle    string = "dordle"
-	Quordle   string = "quordle"
-	Octordle  string = "octordle"
-	Worldle   string = "worldle"
-	Tradle    string = "tradle"
-	Explordle string = "explordle"
+	Wordle      string = "wordle"
+	Dordle      string = "dordle"
+	Quordle     string = "quordle"
+	Octordle    string = "octordle"
+	Worldle     string = "worldle"
+	Tradle      string = "tradle"
+	Explordle   string = "explordle"
+	Connections string = "connections"
 )
 
 type UserScore struct {
@@ -47,13 +49,14 @@ var emojiTranslate map[string]string = map[string]string{
 }
 
 var attempts map[string]int = map[string]int{
-	Wordle:    6,
-	Dordle:    7,
-	Quordle:   9,
-	Octordle:  13,
-	Worldle:   6,
-	Tradle:    6,
-	Explordle: 7,
+	Wordle:      6,
+	Dordle:      7,
+	Quordle:     9,
+	Octordle:    13,
+	Worldle:     6,
+	Tradle:      6,
+	Explordle:   7,
+	Connections: 4,
 }
 
 func computeAverage(scores []string) (float64, error) {
@@ -104,6 +107,29 @@ func processGame(user, game string, scores []string) error {
 	allScores[user] = userScores
 	Edi.Store.Set(wordleBrainKey, allScores)
 	return nil
+}
+
+func scoreConnections(game string) (int, error) {
+	lines := strings.Split(game, "\n")
+	misses := 0
+	for _, line := range lines {
+		r := regexp.MustCompile(`:large_([a-z]+)_square:`)
+		colors := r.FindAllStringSubmatch(line, -1)
+		var color string
+		match := true
+		for i, v := range colors {
+			if i == 0 {
+				color = v[1]
+			} else if color != v[1] {
+				match = false
+				break
+			}
+		}
+		if !match {
+			misses++
+		}
+	}
+	return misses, nil
 }
 
 // Wordle\s\d+\s(.+)/\d
@@ -213,6 +239,21 @@ func ExplordleScore(msg joe.Message) error {
 	return err
 }
 
+func ConnectionScore(msg joe.Message) error {
+	const game string = Connections
+
+	user := msg.AuthorID
+
+	gamestr := msg.Matches[0]
+	misses, err := scoreConnections(gamestr)
+	if err != nil {
+		return err
+	}
+	scores := []string{fmt.Sprintf("%d", misses)}
+	err = processGame(user, game, scores)
+	return err
+}
+
 func WordleStats(msg joe.Message) error {
 	user := msg.AuthorID
 	var allScores map[string]UserScore = make(map[string]UserScore)
@@ -220,7 +261,7 @@ func WordleStats(msg joe.Message) error {
 	if err != nil {
 		return err
 	}
-	var gameOrder = []string{Wordle, Dordle, Quordle, Octordle, Worldle, Tradle, Explordle}
+	var gameOrder = []string{Wordle, Dordle, Quordle, Octordle, Worldle, Tradle, Explordle, Connections}
 	if v, ok := allScores[user]; ok {
 		var output []string
 		for _, game := range gameOrder {
