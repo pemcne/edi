@@ -19,6 +19,7 @@ const (
 	Tradle      string = "tradle"
 	Explordle   string = "explordle"
 	Connections string = "connections"
+	Strands     string = "strands"
 )
 
 type UserScore struct {
@@ -57,6 +58,7 @@ var attempts map[string]int = map[string]int{
 	Tradle:      6,
 	Explordle:   7,
 	Connections: 4,
+	Strands:     0,
 }
 
 func computeAverage(scores []string) (float64, error) {
@@ -130,6 +132,34 @@ func scoreConnections(game string) (int, error) {
 		}
 	}
 	return misses, nil
+}
+
+func scoreStrands(game string) (int, error) {
+	// Penalize hints more
+	const hintScore int = 4
+
+	lines := strings.Split(game, "\n")
+	hints := 0
+	count := 0
+	var spanagram int
+
+	for _, line := range lines {
+		r := regexp.MustCompile(`:(\w+):`)
+		symbols := r.FindAllStringSubmatch(line, -1)
+		for _, v := range symbols {
+			fmt.Println("Symbol " + v[1])
+			if v[1] == "bulb" {
+				hints++
+			} else if v[1] == "large_yellow_circle" {
+				spanagram = count
+			} else {
+				count++
+			}
+		}
+	}
+	score := (hints * hintScore) + spanagram
+	fmt.Printf("Hints: %d, span: %d, count: %d\n", hints, spanagram, count)
+	return score, nil
 }
 
 // Wordle\s\d+\s(.+)/\d
@@ -254,6 +284,21 @@ func ConnectionScore(msg joe.Message) error {
 	return err
 }
 
+func StrandsScore(msg joe.Message) error {
+	const game string = Strands
+
+	user := msg.AuthorID
+
+	gamestr := msg.Matches[0]
+	score, err := scoreStrands(gamestr)
+	if err != nil {
+		return err
+	}
+	scores := []string{fmt.Sprintf("%d", score)}
+	err = processGame(user, game, scores)
+	return err
+}
+
 func WordleStats(msg joe.Message) error {
 	user := msg.AuthorID
 	var allScores map[string]UserScore = make(map[string]UserScore)
@@ -261,7 +306,17 @@ func WordleStats(msg joe.Message) error {
 	if err != nil {
 		return err
 	}
-	var gameOrder = []string{Wordle, Dordle, Quordle, Octordle, Worldle, Tradle, Explordle, Connections}
+	var gameOrder = []string{
+		Wordle,
+		Dordle,
+		Quordle,
+		Octordle,
+		Worldle,
+		Tradle,
+		Explordle,
+		Connections,
+		Strands,
+	}
 	if v, ok := allScores[user]; ok {
 		var output []string
 		for _, game := range gameOrder {

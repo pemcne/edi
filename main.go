@@ -88,6 +88,7 @@ func main() {
 	Edi.Hear(`Tradle\s#\d+\s(.+)/\d`, TradleScore)
 	Edi.Hear(`Explordle\s\d+\s(.+)/\d`, ExplordleScore)
 	Edi.Hear(`Connections\sPuzzle #\d+\s([:\w:\s]+)`, ConnectionScore)
+	Edi.Hear(`Strands\s#\d+\s.[\w\s]+.\s([:\w:\s?]+)`, StrandsScore)
 	Edi.Respond("wordle stats", WordleStats)
 
 	// Wordle solver
