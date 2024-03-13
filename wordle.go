@@ -136,7 +136,7 @@ func scoreConnections(game string) (int, error) {
 
 func scoreStrands(game string) (int, error) {
 	// Penalize hints more
-	const hintScore int = 2
+	const hintScore int = 4
 
 	lines := strings.Split(game, "\n")
 	hints := 0
