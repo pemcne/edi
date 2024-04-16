@@ -80,7 +80,7 @@ func main() {
 	Edi.Hear(".+", TriviaGuess)
 
 	// Wordle
-	Edi.Hear(`Wordle\s\d+\s(.+)/\d`, WordleScore)
+	Edi.Hear(`Wordle\s[,\d]+\s(.+)/\d`, WordleScore)
 	Edi.Hear(`Dordle\s#\d+\s(.+)/\d`, DordleScore)
 	Edi.Hear(`Quordle\s\d+\s*(:.+:)(:.+:)\s+(:.+:)(:.+:)`, QuordleScore)
 	Edi.Hear(`Octordle\s#\d+\s*(:.+:)(:.+:)\s+(:.+:)(:.+:)\s+(:.+:)(:.+:)\s+(:.+:)(:.+:)`, OctordleScore)
