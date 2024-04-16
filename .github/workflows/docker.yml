@@ -41,6 +41,5 @@ jobs:
       - uses: 'google-github-actions/auth@v2'
         with:
           credentials_json: ${{ secrets.GCP_ACCOUNT }}
-          create_credentials_file: false
       - uses: 'google-github-actions/setup-gcloud@v2'
       - run: gcloud compute instances reset bots --zone us-central1-c
