@@ -541,6 +541,10 @@ github.com/lithammer/fuzzysearch v1.1.5 h1:Ag7aKU08wp0R9QCfF4GoGST9HbmAIeLP7xwMr
 github.com/lithammer/fuzzysearch v1.1.5/go.mod h1:1R1LRNk7yKid1BaQkmuLQaHruxcC4HmAH30Dh61Ih1Q=
 github.com/notnil/chess v1.9.0 h1:YMxR5kUVjtwcuFptGU0/3q7eG3MSHQNbg0VUekvRKV0=
 github.com/notnil/chess v1.9.0/go.mod h1:cRuJUIBFq9Xki05TWHJxHYkC+fFpq45IWwk94DdlCrA=
+github.com/pemcne/carddeck/v2 v2.0.0-20250430035048-434c4d57da38 h1:913XDhR1VEKS885V64f//+Et2GLYjfK9oeABDPaQSRU=
+github.com/pemcne/carddeck/v2 v2.0.0-20250430035048-434c4d57da38/go.mod h1:YtVRQtUzVrmtUAfaEtKWS8bwKEctMyBWpi5u+jlUwO0=
+github.com/pemcne/carddeck/v2 v2.0.0-20250521033037-c6fa3b54a0ae h1:TbgWXeWBAxl8b1YYz0kj930kAGTXgzepKcP888k78x0=
+github.com/pemcne/carddeck/v2 v2.0.0-20250521033037-c6fa3b54a0ae/go.mod h1:YtVRQtUzVrmtUAfaEtKWS8bwKEctMyBWpi5u+jlUwO0=
 github.com/pemcne/firestore-memory v0.0.0-20221218153031-323b330c3e9d h1:u7uCX35KrprXbWUTr/8+iQi8TZkAF4GUu/67XXWnA4s=
 github.com/pemcne/firestore-memory v0.0.0-20221218153031-323b330c3e9d/go.mod h1:6KzOnVys8G/dX7bMNZeVWaO+Bmc87Tho6OAw7Tc1Ygc=
 github.com/pemcne/joe v0.11.1-0.20220403212347-b9408549999d h1:rxFTWON6UGRV5uE6/8sGkhw3zlGUiInjp7y4ErC/bDE=

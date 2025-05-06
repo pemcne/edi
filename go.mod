@@ -1,6 +1,6 @@
 module github.com/pemcne/edi
 
-go 1.20
+go 1.24.2
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.0
@@ -26,6 +26,7 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.2.0 // indirect
 	github.com/googleapis/gax-go/v2 v2.7.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
+	github.com/pemcne/carddeck/v2 v2.0.0-20250521033037-c6fa3b54a0ae // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect

@@ -8,6 +8,7 @@ import (
 	"github.com/go-joe/joe"
 	"github.com/go-joe/slack-adapter/v2"
 	"github.com/pemcne/firestore-memory"
+	"go.uber.org/zap/zapcore"
 
 	slackapi "github.com/slack-go/slack"
 )
@@ -50,7 +51,7 @@ func loadModules(name string) []joe.Module {
 	}
 
 	// For debugging
-	// modules = append(modules, joe.WithLogLevel(zapcore.DebugLevel))
+	modules = append(modules, joe.WithLogLevel(zapcore.DebugLevel))
 	return modules
 }
 
@@ -128,6 +129,12 @@ func main() {
 	if Engine != nil {
 		defer Engine.Close()
 	}
+
+	// Blackjack
+	loadBlackjack()
+	Edi.Respond("blackjack new", BlackjackGame)
+	Edi.Hear(`^hit$`, BlackjackHit)
+	Edi.Hear(`^stand$`, BlackjackStand)
 
 	err = Edi.Run()
 	if err != nil {
